@@ -10,21 +10,20 @@ from plotly.graph_objs import *
 first_time_load = 1
 
 st.set_page_config(
-    page_title="Real-Time Data Science Dashboard",
-    page_icon="✅",
+    page_title="Fault Detection in Distribution Line Project Data Dashboard ⚡",
+    page_icon="⚡",
     layout="wide",
 )
 
-# read csv from a github repo
+# read csv from a Thinspeak.com channel
 dataset_url = "https://thingspeak.com/channels/1770839/feed.csv"
 
-# read csv from a URL
+# cutting off "UTC" part of date time object
 def slicee(s):
     return s[:-3]
 
 # @st.experimental_memo
 def get_data() -> pd.DataFrame:
-    print("Fetching data")
     df = pd.read_csv(dataset_url)
     df.columns = ["created_at", "entry_id", "Area_id",
                   "temperature", "humidity", "CO_gas_level", "Fault"]
@@ -38,7 +37,7 @@ def get_data() -> pd.DataFrame:
 df = get_data()
 
 # dashboard title
-st.title("Real-Time Distribution-Line-Project-Data Dashboard")
+st.title("Fault Detection in Distribution Line Project Data Dashboard ⚡")
 
 click = st.button("Refresh")
 
@@ -57,7 +56,7 @@ with fig_col2:
         if j > hightest[1]:
             hightest[1] = j
             hightest[0] = i
-    print(hightest)
+
     st.metric(
         label="Area : ",
         value=hightest[0] #Hightest Fault Occured Area
@@ -68,22 +67,16 @@ placeholder = st.empty()
 
 
 
-# near real-time / live feed simulation
 while True:
     if first_time_load:
         click=1
     if click:
-        print("Refreshed")
         with placeholder.container():
             df = get_data()
-            print("got  data")
 
-            layout = Layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
+            
             st.markdown("")
-            st.markdown("##                   Temperture Level Charts")
+            st.markdown("## Temperture Level Charts")
             # create two columns for charts
             fig_col3, fig_col3_1 = st.columns(2)
             with fig_col3:
@@ -91,7 +84,7 @@ while True:
                 fig=px.line(
                     df[df['Area_id'] == 1], x="created_at", y="temperature"
                 )
-                fig = Figure(fig, layout=layout)
+                fig = Figure(fig)
                 st.write(fig)
             
             with fig_col3_1:
@@ -106,12 +99,12 @@ while True:
             fig_col4, fig_col4_1 = st.columns(2)
             with fig_col4:
                 st.markdown("#####  Area 1")
-                fig2 = px.histogram(
+                fig2 = px.line(
                     data_frame=df[df['Area_id'] == 1], x="created_at", y="humidity")
                 st.write(fig2)
             with fig_col4_1:
                 st.markdown("##### Area 2")
-                fig2 = px.histogram(
+                fig2 = px.line(
                     data_frame=df[df['Area_id'] == 2], x="created_at", y="humidity")
                 st.write(fig2)
                 
@@ -134,4 +127,3 @@ while True:
 
             
             time.sleep(1)
-    
