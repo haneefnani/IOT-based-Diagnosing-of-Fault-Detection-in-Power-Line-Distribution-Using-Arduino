@@ -73,8 +73,7 @@ while True:
     if click:
         with placeholder.container():
             df = get_data()
-
-            
+ 
             st.markdown("")
             st.markdown("## Temperture Level Charts")
             # create two columns for charts
